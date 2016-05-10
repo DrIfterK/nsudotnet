@@ -1,43 +1,123 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 
 namespace TicTacToe
 {
 	public class ConsoleView : View
 	{
 		Thread thread;
-		private char[] ticTac;
-		public ConsoleView (BigFieldController controller)
+        private static string SET = "set", EXIT = "exit", NEW_GAME = "new", HELP = "help", PRINT = "print";
+        private BigFieldController controller;
+        public ConsoleView (BigFieldController controller)
 		{
-			controller.setView (this);
+            this.controller = controller;
+			controller.SetView (this);
 			thread = new Thread (this.read);
-			ticTac = new {BigFieldController.Tic, BigFieldController.Tac};
 			thread.Start ();
-		}
-		private void read(){
-		
-		}
-		public void update(BigField field){
+            Console.WriteLine("Game started. First is X!");
+        }
+        private void read(){
+
+            while (true)
+            {
+                string line = Console.ReadLine();
+                string[] commands = line.Split(' ');
+                if (commands[0].Equals(SET))
+                {
+                    int lastField = controller.GetLastField();
+                    int bx = 0, by = 0, sx = 0, sy = 0;
+                    if (lastField == -1 && commands.Length == 5)
+                    {
+                        bx = Int32.Parse(commands[1]);
+                        by = Int32.Parse(commands[2]);
+                        sx = Int32.Parse(commands[3]);
+                        sy = Int32.Parse(commands[4]);
+                    }
+                    else if (lastField != -1 && commands.Length == 3)
+                    {
+                        bx = lastField % 3;
+                        by = lastField / 3;
+                        sx = Int32.Parse(commands[1]);
+                        sy = Int32.Parse(commands[2]);
+                    }
+                    else
+                    {
+                        if (lastField == -1)
+                            Console.WriteLine("Wrong args. Type \"set bx by sx sy\".");
+                        else
+                            Console.WriteLine("Wrong args. Type only \"set sx sy\" cause you locked on field " + bx + " " + by + ".");
+                        continue;
+                    }
+                    try
+                    {
+
+                        controller.SetSymbol(bx, by, sx, sy);
+
+                        if (controller.GetSymbol() != Field.NOL)
+                        {
+                            break;
+                        }
+                    }
+                    catch (Field.ChangingNotNOLSynbolException e)
+                    {
+                        Console.WriteLine("Wrong Field selected " + bx + " " + by + " : " + sx + " " + sy);
+                    }
+                    catch (IndexOutOfRangeException e)
+                    {
+                    }
+                }
+                else if (commands[0].Equals(HELP)) help();
+                else if (commands[0].Equals(NEW_GAME)) controller.NewGame();
+                else if (commands[0].Equals(EXIT)) break;
+                else Console.WriteLine("Wrong Command!");
+            }
+        }
+        public void help()
+        {
+            Console.WriteLine("Commands:");
+            Console.WriteLine("    help - this text;");
+            Console.WriteLine("    set - set symbol on field in pos bx by sx sy (0 <= for all < 3 and the same);");
+            Console.WriteLine("    exit - close game;");
+            Console.WriteLine("    new - start new game.");
+        }
+        public void update(BigField field){
 			char bigSymbol = field.getSymbol();
 			if (bigSymbol != Field.NOL) {
 				Console.WriteLine ("Game is over. Winner is " + bigSymbol + ".");
 				return;
 			}
-			StringBuilder[] lines = new StringBuilder[BigField.HEIGHT * SmallField.HEIGHT];
+			StringBuilder[] lines = new StringBuilder[BigField.HEIGHT * SmallField.HEIGHT + 3];
+            for(int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = new StringBuilder();
+            }
+            int last = controller.GetLastField();
 			for (int i = 0; i < BigField.HEIGHT; i++) {
 				for (int j = 0; j < BigField.WIDTH; j++) {
 					SmallField smallField = field.getField (i, j);
 					for (int ii = 0; ii < SmallField.HEIGHT; ii++) {
 						for (int jj = 0; jj < SmallField.WIDTH; jj++) {
 							CharField charField = smallField.getField (ii, jj);
-							lines [i * BigField.HEIGHT + ii].append (charField.getSymbol);
+							lines [i * BigField.HEIGHT + ii].Append (charField.getSymbol());
 						}
-					}
-				}
+                        if(i == last/BigField.HEIGHT && j == last/BigField.WIDTH && last != -1)
+                            lines[i * BigField.HEIGHT + ii].Append('|');
+                        else if(smallField.getSymbol() != Field.NOL)
+                            lines[i * BigField.HEIGHT + ii].Append('#');
+                        else
+                            lines[i * BigField.HEIGHT + ii].Append(' ');         
+                    }
+                }
 			}
-			foreach(StringBuilder sb in lines){
-				Console.WriteLine (sb.ToString ());
-			}
+            for (int i = 0; i < BigField.HEIGHT; i++)
+            {
+                for (int j = 0; j < SmallField.HEIGHT; j++)
+                {
+                    Console.WriteLine(lines[i*BigField.HEIGHT + j].ToString());
+                }
+                Console.WriteLine();
+            }
 		}
 	}
 }

@@ -6,7 +6,7 @@ namespace TicTacToe
 	{
 		public CharField ()
 		{
-			symbol = '0';
+			symbol = Field.NOL;
 		}
 	}
 }
