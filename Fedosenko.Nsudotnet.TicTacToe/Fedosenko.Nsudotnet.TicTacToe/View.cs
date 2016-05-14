@@ -4,7 +4,7 @@ namespace TicTacToe
 {
 	public interface View
 	{
-		void update (BigField field);
+		void Update (BigField field);
 	}
 }
 

@@ -17,16 +17,16 @@ namespace TicTacToe
 				}
 			}
 		}
-        public void setSymbol(int x, int y, char symbol)
+        public void SetSymbol(int x, int y, char symbol)
         {
-            field[y, x].setSymbol(symbol);
+            field[y, x].SetSymbol(symbol);
         }
-		public SmallField getField(int x, int y){
+		public SmallField GetField(int x, int y){
 			return field [y, x];
 		}
-        public char getSymbol(int x, int y)
+        public char GetSymbol(int x, int y)
         {
-            return field[y, x].getSymbol();
+            return field[y, x].GetSymbol();
         }
     }
 }

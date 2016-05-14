@@ -13,11 +13,11 @@ namespace TicTacToe
 		{
             this.controller = controller;
 			controller.SetView (this);
-			thread = new Thread (this.read);
+			thread = new Thread (this.Read);
 			thread.Start ();
             Console.WriteLine("Game started. First is X!");
         }
-        private void read(){
+        private void Read(){
 
             while (true)
             {
@@ -53,9 +53,11 @@ namespace TicTacToe
                     {
 
                         controller.SetSymbol(bx, by, sx, sy);
-
-                        if (controller.GetSymbol() != Field.NOL)
+                        char win;
+                        if ((win = controller.GetSymbol()) != Field.NOL)
                         {
+                            Console.WriteLine("Game is over! Winner is " + win + "!");
+                            Console.WriteLine("If you want to start a new game type \"new\".");
                             break;
                         }
                     }
@@ -67,13 +69,13 @@ namespace TicTacToe
                     {
                     }
                 }
-                else if (commands[0].Equals(HELP)) help();
+                else if (commands[0].Equals(HELP)) Help();
                 else if (commands[0].Equals(NEW_GAME)) controller.NewGame();
                 else if (commands[0].Equals(EXIT)) break;
                 else Console.WriteLine("Wrong Command!");
             }
         }
-        public void help()
+        public void Help()
         {
             Console.WriteLine("Commands:");
             Console.WriteLine("    help - this text;");
@@ -81,8 +83,8 @@ namespace TicTacToe
             Console.WriteLine("    exit - close game;");
             Console.WriteLine("    new - start new game.");
         }
-        public void update(BigField field){
-			char bigSymbol = field.getSymbol();
+        public void Update(BigField field){
+			char bigSymbol = field.GetSymbol();
 			if (bigSymbol != Field.NOL) {
 				Console.WriteLine ("Game is over. Winner is " + bigSymbol + ".");
 				return;
@@ -95,15 +97,15 @@ namespace TicTacToe
             int last = controller.GetLastField();
 			for (int i = 0; i < BigField.HEIGHT; i++) {
 				for (int j = 0; j < BigField.WIDTH; j++) {
-					SmallField smallField = field.getField (i, j);
+					SmallField smallField = field.GetField (i, j);
 					for (int ii = 0; ii < SmallField.HEIGHT; ii++) {
 						for (int jj = 0; jj < SmallField.WIDTH; jj++) {
-							CharField charField = smallField.getField (ii, jj);
-							lines [i * BigField.HEIGHT + ii].Append (charField.getSymbol());
+							CharField charField = smallField.GetField (ii, jj);
+							lines [i * BigField.HEIGHT + ii].Append (charField.GetSymbol());
 						}
                         if(i == last/BigField.HEIGHT && j == last/BigField.WIDTH && last != -1)
                             lines[i * BigField.HEIGHT + ii].Append('|');
-                        else if(smallField.getSymbol() != Field.NOL)
+                        else if(smallField.GetSymbol() != Field.NOL)
                             lines[i * BigField.HEIGHT + ii].Append('#');
                         else
                             lines[i * BigField.HEIGHT + ii].Append(' ');         

@@ -18,16 +18,16 @@ namespace TicTacToe
 			}
 		}
 
-		public void setSymbol(int x, int y, char symbol){
+		public void SetSymbol(int x, int y, char symbol){
             if (this.symbol == NOL)
-                field[y, x].setSymbol(symbol);
+                field[y, x].SetSymbol(symbol);
             else throw new ChangingNotNOLSynbolException();
 		}
-        public char getSymbol(int x, int y)
+        public char GetSymbol(int x, int y)
         {
-            return field[y, x].getSymbol();
+            return field[y, x].GetSymbol();
         }
-        public CharField getField(int x, int y){
+        public CharField GetField(int x, int y){
 			return field [y, x];
 		}
 	}

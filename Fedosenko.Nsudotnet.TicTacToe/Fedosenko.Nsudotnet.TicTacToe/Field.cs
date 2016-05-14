@@ -15,12 +15,12 @@ namespace TicTacToe
         }
         public static char NOL = '0', TIC = 'X', TAC = 'O', NOR = '-';
 		protected char symbol;
-		public void setSymbol (char symbol){
+		public void SetSymbol (char symbol){
             if (this.symbol == NOL)
                 this.symbol = symbol;
             else throw new ChangingNotNOLSynbolException();
 		}
-		public char getSymbol (){
+		public char GetSymbol (){
 			return symbol;
 		}
 	}

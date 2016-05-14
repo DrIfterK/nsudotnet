@@ -15,21 +15,20 @@ namespace TicTacToe
 				if (current_field [i / width, 0] == current_field [i / width, 1] &&
 					current_field [i / width, 1] == current_field [i / width, 2] &&
 					current_field [i / width, 2] != Field.NOL) {
-					return current_field [i / width, i];
+					return current_field [i / width, 1];
 				}
-				else if (current_field [0, i / height] == current_field [1, i / height] &&
+			    if (current_field [0, i / height] == current_field [1, i / height] &&
 					current_field [1, i / height] == current_field [2, i / height] &&
 					current_field [2, i / height] != Field.NOL) {
-					return current_field [i, i / height];
+					return current_field [1, i / height];
 				}
 			}
-            if ((current_field[0, 0] == current_field[1, 1] &&
+            if (((current_field[0, 0] == current_field[1, 1] &&
                 current_field[1, 1] == current_field[2, 2]) ||
                 (current_field[0, 2] == current_field[1, 1] &&
-                    current_field[1, 1] == current_field[2, 0]) &&
+                    current_field[1, 1] == current_field[2, 0])) &&
                 current_field[1, 1] != Field.NOL)
             {
-                field.setSymbol(1, 1, current_field[1, 1]);
                 return current_field[1, 1];
             }
             else return Field.NOL;
@@ -46,11 +45,11 @@ namespace TicTacToe
             cx = -1;
             cy = -1;
             field = new BigField();
-            view.update(field);
+            view.Update(field);
         }
 		public void SetView(View view){
 			this.view = view;
-			view.update (field);
+			view.Update (field);
 		}
         public virtual int GetLastField()
         {
@@ -58,24 +57,24 @@ namespace TicTacToe
             else return cy*3 + cx;
         }
 		public virtual char GetSymbol(){
-			return field.getSymbol();
+			return field.GetSymbol();
 		}
         public virtual void SetSymbol(int bx, int by, int sx, int sy){
                 if ((bx == cx && by == cy) || (cx == -1 && cy == -1))
                 {
                     cx = sx;
                     cy = sy;
-                    if(field.getField(cx, cy).getSymbol() != Field.NOL)
+                    if(field.GetField(cx, cy).GetSymbol() != Field.NOL)
                     {
                         cx = -1;
                         cy = -1;
                     }
-                    SmallField current = field.getField(bx, by);
-                    current.setSymbol(sx, sy, tic_tac[count % tic_tac.Length]);
+                    SmallField current = field.GetField(bx, by);
+                    current.SetSymbol(sx, sy, tic_tac[count % tic_tac.Length]);
                     IsSmallGameOver(current);
                     IsGameOver();
                     count++;
-                    view.update(field);
+                    view.Update(field);
                 }
                 else
                 {
@@ -88,13 +87,13 @@ namespace TicTacToe
             bool hasNol = false;
             for (int i = 0; i < height; i++) {
 				for (int j = 0; j < width; j++) {
-                    current_field[i, j] = field.getSymbol(j, i);
+                    current_field[i, j] = field.GetSymbol(j, i);
                     if (current_field[i, j] == Field.NOL) hasNol = true;
 				}
 			}
 			char symbol = GetWinSymbol (current_field);
-			field.setSymbol (symbol);
-            if (symbol == Field.NOL && hasNol == false) field.setSymbol(Field.NOR);
+			field.SetSymbol (symbol);
+            if (symbol == Field.NOL && hasNol == false) field.SetSymbol(Field.NOR);
 			return symbol;
 		}
 		public char IsGameOver(){
@@ -103,13 +102,13 @@ namespace TicTacToe
             bool hasNol = false;
             for (int i = 0; i < height; i++) {
 				for (int j = 0; j < width; j++) {
-					current_field [i,j] = field.getSymbol(j, i);
+					current_field [i,j] = field.GetSymbol(j, i);
                     if (current_field[i, j] == Field.NOL) hasNol = true;
                 }
             }
 			char symbol = GetWinSymbol (current_field);
-			field.setSymbol (symbol);
-            if (symbol == Field.NOL && hasNol == false) field.setSymbol(Field.NOR);
+			field.SetSymbol (symbol);
+            if (symbol == Field.NOL && hasNol == false) field.SetSymbol(Field.NOR);
             return symbol;
 		}
 	}
