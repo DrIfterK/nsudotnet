@@ -4,21 +4,19 @@ namespace TicTacToe
 {
 	public abstract class Field
 	{
-//		private const int width = 3, height = 3;
-//		Field[][] field;
-        public class ChangingNotNOLSynbolException : Exception
+        public class ChangingNotNolSymbolException : Exception
         {
-            public ChangingNotNOLSynbolException()
+            public ChangingNotNolSymbolException()
             {
 
             }
         }
-        public static char NOL = '0', TIC = 'X', TAC = 'O', NOR = '-';
+        public const char Nol = '_', Tic = 'X', Tac = 'O', Nor = '-';
 		protected char symbol;
 		public void SetSymbol (char symbol){
-            if (this.symbol == NOL)
+            if (this.symbol == Nol)
                 this.symbol = symbol;
-            else throw new ChangingNotNOLSynbolException();
+            else throw new ChangingNotNolSymbolException();
 		}
 		public char GetSymbol (){
 			return symbol;

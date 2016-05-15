@@ -2,115 +2,129 @@
 
 namespace TicTacToe
 {
-	public class BigFieldController
-	{
-        private int count = 0;
-		private int cy = -1, cx = -1;
-		private View view;
-        private char[] tic_tac;
+    public class BigFieldController
+    {
+        private int _count = 0;
+        private int _lastFieldX = -1, _lastFieldY = -1;
+        private View _view;
+        private char[] _symbols;
         protected BigField field;
-		private char GetWinSymbol(char[,] current_field){
-			int width = BigField.WIDTH, height = BigField.HEIGHT;
-			for (int i = 0; i < width * height; i++) {
-				if (current_field [i / width, 0] == current_field [i / width, 1] &&
-					current_field [i / width, 1] == current_field [i / width, 2] &&
-					current_field [i / width, 2] != Field.NOL) {
-					return current_field [i / width, 1];
-				}
-			    if (current_field [0, i / height] == current_field [1, i / height] &&
-					current_field [1, i / height] == current_field [2, i / height] &&
-					current_field [2, i / height] != Field.NOL) {
-					return current_field [1, i / height];
-				}
-			}
-            if (((current_field[0, 0] == current_field[1, 1] &&
-                current_field[1, 1] == current_field[2, 2]) ||
-                (current_field[0, 2] == current_field[1, 1] &&
-                    current_field[1, 1] == current_field[2, 0])) &&
-                current_field[1, 1] != Field.NOL)
+        private char GetWinSymbol(char[,] currentField)
+        {
+            int width = BigField.Width, height = BigField.Height;
+            for (int i = 0; i < width * height; i++)
             {
-                return current_field[1, 1];
+                if (currentField[i / width, 0] == currentField[i / width, 1] &&
+                    currentField[i / width, 1] == currentField[i / width, 2] &&
+                    currentField[i / width, 2] != Field.Nol)
+                {
+                    return currentField[i / width, 1];
+                }
+                if (currentField[0, i / height] == currentField[1, i / height] &&
+                    currentField[1, i / height] == currentField[2, i / height] &&
+                    currentField[2, i / height] != Field.Nol)
+                {
+                    return currentField[1, i / height];
+                }
             }
-            else return Field.NOL;
-		}
-		public BigFieldController (BigField field)
-		{
-            tic_tac = new char[2] { Field.TIC, Field.TAC };
+            if (((currentField[0, 0] == currentField[1, 1] &&
+                currentField[1, 1] == currentField[2, 2]) ||
+                (currentField[0, 2] == currentField[1, 1] &&
+                    currentField[1, 1] == currentField[2, 0])) &&
+                currentField[1, 1] != Field.Nol)
+            {
+                return currentField[1, 1];
+            }
+            else return Field.Nol;
+        }
+        public BigFieldController(BigField field)
+        {
+            _symbols = new char[2] { Field.Tic, Field.Tac };
             this.field = field;
-		}
+        }
 
         public void NewGame()
         {
-            count = 0;
-            cx = -1;
-            cy = -1;
+            _count = 0;
+            _lastFieldY = -1;
+            _lastFieldX = -1;
             field = new BigField();
+            _view.Update(field);
+        }
+        public void SetView(View view)
+        {
+            this._view = view;
             view.Update(field);
         }
-		public void SetView(View view){
-			this.view = view;
-			view.Update (field);
-		}
         public virtual int GetLastField()
         {
-            if (cx == -1 || cy == -1) return -1;
-            else return cy*3 + cx;
+            if (_lastFieldY == -1 || _lastFieldX == -1) return -1;
+            else return _lastFieldX * 3 + _lastFieldY;
         }
-		public virtual char GetSymbol(){
-			return field.GetSymbol();
-		}
-        public virtual void SetSymbol(int bx, int by, int sx, int sy){
-                if ((bx == cx && by == cy) || (cx == -1 && cy == -1))
+        public virtual char GetSymbol()
+        {
+            return field.GetSymbol();
+        }
+        public virtual void SetSymbol(int bigFieldX, int bigFieldY, int smallFieldX, int smallFieldY)
+        {
+            if ((bigFieldX == _lastFieldY && bigFieldY == _lastFieldX) || (_lastFieldY == -1 && _lastFieldX == -1))
+            {
+                
+                SmallField current = field.GetField(bigFieldX, bigFieldY);
+                current.SetSymbol(smallFieldX, smallFieldY, _symbols[_count % _symbols.Length]);
+                IsSmallGameOver(current);
+                IsGameOver();
+                _lastFieldY = smallFieldX;
+                _lastFieldX = smallFieldY;
+                if (field.GetField(_lastFieldY, _lastFieldX).GetSymbol() != Field.Nol)
                 {
-                    cx = sx;
-                    cy = sy;
-                    if(field.GetField(cx, cy).GetSymbol() != Field.NOL)
-                    {
-                        cx = -1;
-                        cy = -1;
-                    }
-                    SmallField current = field.GetField(bx, by);
-                    current.SetSymbol(sx, sy, tic_tac[count % tic_tac.Length]);
-                    IsSmallGameOver(current);
-                    IsGameOver();
-                    count++;
-                    view.Update(field);
+                    _lastFieldY = -1;
+                    _lastFieldX = -1;
                 }
-                else
+                _count++;
+                _view.Update(field);
+            }
+            else
+            {
+                Console.WriteLine("WHAAAAT!");
+            }
+        }
+        public char IsSmallGameOver(SmallField field)
+        {
+            int width = SmallField.Width, height = SmallField.Height;
+            char[,] currentField = new char[height, width];
+            bool hasNol = false;
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
                 {
-
-                }
-		}
-		public char IsSmallGameOver(SmallField field){
-			int width = SmallField.WIDTH, height = SmallField.HEIGHT;
-            char[,] current_field = new char[height, width];
-            bool hasNol = false;
-            for (int i = 0; i < height; i++) {
-				for (int j = 0; j < width; j++) {
-                    current_field[i, j] = field.GetSymbol(j, i);
-                    if (current_field[i, j] == Field.NOL) hasNol = true;
-				}
-			}
-			char symbol = GetWinSymbol (current_field);
-			field.SetSymbol (symbol);
-            if (symbol == Field.NOL && hasNol == false) field.SetSymbol(Field.NOR);
-			return symbol;
-		}
-		public char IsGameOver(){
-			int width = SmallField.WIDTH, height = SmallField.HEIGHT;
-            char[,] current_field = new char[height, width];
-            bool hasNol = false;
-            for (int i = 0; i < height; i++) {
-				for (int j = 0; j < width; j++) {
-					current_field [i,j] = field.GetSymbol(j, i);
-                    if (current_field[i, j] == Field.NOL) hasNol = true;
+                    currentField[i, j] = field.GetSymbol(j, i);
+                    if (currentField[i, j] == Field.Nol) hasNol = true;
                 }
             }
-			char symbol = GetWinSymbol (current_field);
-			field.SetSymbol (symbol);
-            if (symbol == Field.NOL && hasNol == false) field.SetSymbol(Field.NOR);
+            char symbol = GetWinSymbol(currentField);
+            field.SetSymbol(symbol);
+            if (symbol == Field.Nol && hasNol == false) field.SetSymbol(Field.Nor);
             return symbol;
-		}
-	}
+        }
+        public char IsGameOver()
+        {
+            int width = SmallField.Width, height = SmallField.Height;
+            char[,] currentField = new char[height, width];
+            bool hasNol = false;
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    currentField[i, j] = field.GetSymbol(j, i);
+                    if (currentField[i, j] == Field.Nol) hasNol = true;
+                }
+            }
+            char symbol = GetWinSymbol(currentField);
+            field.SetSymbol(symbol);
+            if (symbol == Field.Nol && hasNol == false) field.SetSymbol(Field.Nor);
+            return symbol;
+        }
+    }
 }
 

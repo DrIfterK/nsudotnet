@@ -6,15 +6,15 @@ namespace TicTacToe
 {
 	public class ConsoleView : View
 	{
-		Thread thread;
-        private static string SET = "set", EXIT = "exit", NEW_GAME = "new", HELP = "help", PRINT = "print";
-        private BigFieldController controller;
+		private Thread _thread;
+        private const string CmdSet = "set", CmdExit = "exit", CmdNewGame = "new", CmdHelp = "help";
+        private BigFieldController _controller;
         public ConsoleView (BigFieldController controller)
 		{
-            this.controller = controller;
+            this._controller = controller;
 			controller.SetView (this);
-			thread = new Thread (this.Read);
-			thread.Start ();
+			_thread = new Thread (this.Read);
+			_thread.Start ();
             Console.WriteLine("Game started. First is X!");
         }
         private void Read(){
@@ -23,55 +23,56 @@ namespace TicTacToe
             {
                 string line = Console.ReadLine();
                 string[] commands = line.Split(' ');
-                if (commands[0].Equals(SET))
+                if (commands[0].Equals(CmdSet))
                 {
-                    int lastField = controller.GetLastField();
-                    int bx = 0, by = 0, sx = 0, sy = 0;
+                    int lastField = _controller.GetLastField();
+                    int bigFieldX = 0, bigFieldY = 0, smallFieldX = 0, smallFieldY = 0;
                     if (lastField == -1 && commands.Length == 5)
                     {
-                        bx = Int32.Parse(commands[1]);
-                        by = Int32.Parse(commands[2]);
-                        sx = Int32.Parse(commands[3]);
-                        sy = Int32.Parse(commands[4]);
+                        bigFieldX = Int32.Parse(commands[1]);
+                        bigFieldY = Int32.Parse(commands[2]);
+                        smallFieldX = Int32.Parse(commands[3]);
+                        smallFieldY = Int32.Parse(commands[4]);
                     }
                     else if (lastField != -1 && commands.Length == 3)
                     {
-                        bx = lastField % 3;
-                        by = lastField / 3;
-                        sx = Int32.Parse(commands[1]);
-                        sy = Int32.Parse(commands[2]);
+                        bigFieldX = lastField % 3;
+                        bigFieldY = lastField / 3;
+                        smallFieldX = Int32.Parse(commands[1]);
+                        smallFieldY = Int32.Parse(commands[2]);
                     }
                     else
                     {
                         if (lastField == -1)
-                            Console.WriteLine("Wrong args. Type \"set bx by sx sy\".");
+                            Console.WriteLine("Wrong args. Type \"set bigFieldX bigFieldY smallFieldX smallFieldY\".");
                         else
-                            Console.WriteLine("Wrong args. Type only \"set sx sy\" cause you locked on field " + bx + " " + by + ".");
+                            Console.WriteLine("Wrong args. Type only \"set smallFieldX smallFieldY\" cause you locked on field " + lastField % 3 + " " + lastField / 3 + ".");
                         continue;
                     }
                     try
                     {
 
-                        controller.SetSymbol(bx, by, sx, sy);
-                        char win;
-                        if ((win = controller.GetSymbol()) != Field.NOL)
+                        _controller.SetSymbol(bigFieldX, bigFieldY, smallFieldX, smallFieldY);
+                        char winnerSymbol;
+                        if ((winnerSymbol = _controller.GetSymbol()) != Field.Nol)
                         {
-                            Console.WriteLine("Game is over! Winner is " + win + "!");
+                            Console.WriteLine("Game is over! Winner is " + winnerSymbol + "!");
                             Console.WriteLine("If you want to start a new game type \"new\".");
-                            break;
                         }
                     }
-                    catch (Field.ChangingNotNOLSynbolException e)
+                    catch (System.IndexOutOfRangeException e)
                     {
-                        Console.WriteLine("Wrong Field selected " + bx + " " + by + " : " + sx + " " + sy);
+                        Console.WriteLine("Wrong Field selected " + bigFieldX + " " + bigFieldY + " : " + smallFieldX + " " + smallFieldY);
                     }
-                    catch (IndexOutOfRangeException e)
+                    catch (Field.ChangingNotNolSymbolException e)
                     {
+                        Console.WriteLine("Wrong Field selected " + bigFieldX + " " + bigFieldY + " : " + smallFieldX + " " + smallFieldY);
                     }
+                    
                 }
-                else if (commands[0].Equals(HELP)) Help();
-                else if (commands[0].Equals(NEW_GAME)) controller.NewGame();
-                else if (commands[0].Equals(EXIT)) break;
+                else if (commands[0].Equals(CmdHelp)) Help();
+                else if (commands[0].Equals(CmdNewGame)) _controller.NewGame();
+                else if (commands[0].Equals(CmdExit)) break;
                 else Console.WriteLine("Wrong Command!");
             }
         }
@@ -79,44 +80,39 @@ namespace TicTacToe
         {
             Console.WriteLine("Commands:");
             Console.WriteLine("    help - this text;");
-            Console.WriteLine("    set - set symbol on field in pos bx by sx sy (0 <= for all < 3 and the same);");
-            Console.WriteLine("    exit - close game;");
+            Console.WriteLine("    set - set symbol on field in position bigFieldX bigFieldY smallFieldX smallFieldY (0 <= for all <= 2). If you locked on field just type \"set smallFieldX smallFieldY\";");
+            Console.WriteLine("    exit - close the game;");
             Console.WriteLine("    new - start new game.");
         }
         public void Update(BigField field){
-			char bigSymbol = field.GetSymbol();
-			if (bigSymbol != Field.NOL) {
-				Console.WriteLine ("Game is over. Winner is " + bigSymbol + ".");
-				return;
-			}
-			StringBuilder[] lines = new StringBuilder[BigField.HEIGHT * SmallField.HEIGHT + 3];
+			StringBuilder[] lines = new StringBuilder[BigField.Height * SmallField.Height + 3];
             for(int i = 0; i < lines.Length; i++)
             {
                 lines[i] = new StringBuilder();
             }
-            int last = controller.GetLastField();
-			for (int i = 0; i < BigField.HEIGHT; i++) {
-				for (int j = 0; j < BigField.WIDTH; j++) {
-					SmallField smallField = field.GetField (i, j);
-					for (int ii = 0; ii < SmallField.HEIGHT; ii++) {
-						for (int jj = 0; jj < SmallField.WIDTH; jj++) {
-							CharField charField = smallField.GetField (ii, jj);
-							lines [i * BigField.HEIGHT + ii].Append (charField.GetSymbol());
+            int last = _controller.GetLastField();
+			for (int i = 0; i < BigField.Height; i++) {
+				for (int j = 0; j < BigField.Width; j++) {
+					SmallField smallField = field.GetField (j, i);
+					for (int ii = 0; ii < SmallField.Height; ii++) {
+						for (int jj = 0; jj < SmallField.Width; jj++) {
+							CharField charField = smallField.GetField (jj, ii);
+							lines [i * BigField.Height + ii].Append (charField.GetSymbol());
 						}
-                        if(i == last/BigField.HEIGHT && j == last/BigField.WIDTH && last != -1)
-                            lines[i * BigField.HEIGHT + ii].Append('|');
-                        else if(smallField.GetSymbol() != Field.NOL)
-                            lines[i * BigField.HEIGHT + ii].Append('#');
+                        if(i == last/BigField.Height && j == last%BigField.Width && last != -1)
+                            lines[i * BigField.Height + ii].Append('|');
+                        else if(smallField.GetSymbol() != Field.Nol)
+                            lines[i * BigField.Height + ii].Append('#');
                         else
-                            lines[i * BigField.HEIGHT + ii].Append(' ');         
+                            lines[i * BigField.Height + ii].Append(' ');         
                     }
                 }
 			}
-            for (int i = 0; i < BigField.HEIGHT; i++)
+            for (int i = 0; i < BigField.Height; i++)
             {
-                for (int j = 0; j < SmallField.HEIGHT; j++)
+                for (int j = 0; j < SmallField.Height; j++)
                 {
-                    Console.WriteLine(lines[i*BigField.HEIGHT + j].ToString());
+                    Console.WriteLine(lines[i*BigField.Height + j].ToString());
                 }
                 Console.WriteLine();
             }

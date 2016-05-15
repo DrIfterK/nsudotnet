@@ -4,31 +4,31 @@ namespace TicTacToe
 {
 	public class SmallField : MapField
 	{
-		public static int WIDTH = 3, HEIGHT = 3;
-		CharField[,] field;
+		public const int Width = 3, Height = 3;
+		private CharField[,] _field;
 
 		public SmallField ()
 		{
-			symbol = NOL;
-			this.field = new CharField[HEIGHT, WIDTH];
-			for (int i = 0; i < HEIGHT; i++) {
-				for (int j = 0; j < WIDTH; j++) {
-					field [i, j] = new CharField ();
+			symbol = Nol;
+			this._field = new CharField[Height, Width];
+			for (int i = 0; i < Height; i++) {
+				for (int j = 0; j < Width; j++) {
+					_field [i, j] = new CharField ();
 				}
 			}
 		}
 
 		public void SetSymbol(int x, int y, char symbol){
-            if (this.symbol == NOL)
-                field[y, x].SetSymbol(symbol);
-            else throw new ChangingNotNOLSynbolException();
+            if (this.symbol == Nol)
+                _field[y, x].SetSymbol(symbol);
+            else throw new ChangingNotNolSymbolException();
 		}
         public char GetSymbol(int x, int y)
         {
-            return field[y, x].GetSymbol();
+            return _field[y, x].GetSymbol();
         }
         public CharField GetField(int x, int y){
-			return field [y, x];
+			return _field [y, x];
 		}
 	}
 }
