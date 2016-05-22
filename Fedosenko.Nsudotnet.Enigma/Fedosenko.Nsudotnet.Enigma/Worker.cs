@@ -8,21 +8,26 @@ namespace Fedosenko.Nsudotnet.Enigma
 {
     abstract class Worker
     {
+        public const string WrongArgs = "Wrong arguments!";
         public const string TaskDecrypt = "decrypt", TaskEncrypt = "encrypt";
         public const string AlgAES = "AES", AlgRC2 = "RC2", AlgDES = "DES", AlgRijndael = "RIJNDAEL";
+        public const int KeyLength = 8;
+
         public abstract void DoWork();
         public class NoSuchAlgorithmException : Exception
         {
-
+            public NoSuchAlgorithmException() { }
+            public NoSuchAlgorithmException(string message) : base(message) { }
         };
-        public class NoSuchTaskException : Exception
+        public class WrongArgsException : Exception
         {
-
+            public WrongArgsException() { }
+            public WrongArgsException(string message) : base(message) { }
         };
+        
         public SymmetricAlgorithm parseAlgorithm(String algorithmName)
         {
-            algorithmName = algorithmName.ToUpper();
-            switch (algorithmName)
+            switch (algorithmName.ToUpper())
             {
                 case AlgAES:
                     return new AesCryptoServiceProvider();
@@ -32,7 +37,8 @@ namespace Fedosenko.Nsudotnet.Enigma
                     return new DESCryptoServiceProvider();
                 case AlgRijndael:
                     return new RijndaelManaged();
-                default: throw new NoSuchAlgorithmException();
+                default:
+                    throw new WrongArgsException("NoSuchAlgorithm: " + algorithmName);
             }
         }
     }

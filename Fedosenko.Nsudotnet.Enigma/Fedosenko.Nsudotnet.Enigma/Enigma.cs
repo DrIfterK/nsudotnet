@@ -8,34 +8,36 @@ namespace Fedosenko.Nsudotnet.Enigma
 {
     class Enigma
     {
+        public const string CmdHelp = "-h", CmdAltHelp = "--help";
+        public const string MsgHelp = Decoder.HelpDecode + "\n" + Encoder.HelpEncode;
+
         static void Main(string[] args)
         {
-            Console.WriteLine(args.Length);
-            if(args.Length != 4 && args.Length != 5)
+            if(args[0].Equals(CmdHelp) || args[0].Equals(CmdAltHelp))
             {
-                Console.WriteLine("Not enough arguments");
+                Console.WriteLine(MsgHelp);
                 return;
             }
             try
             {
                 String whatToDo = args[0];
                 Worker worker;
-                switch (whatToDo)
+                switch (whatToDo.ToLower())
                 {
                     case Worker.TaskEncrypt:
-                        worker = new Encoder(args[2], args[1], args[3]);
+                        worker = new Encoder(args);
                         break;
                     case Worker.TaskDecrypt:
-                        worker = new Decoder(args[2], args[1], args[3], args[4]);
+                        worker = new Decoder(args);
                         break;
                     default:
-                        throw new Worker.NoSuchTaskException();
+                        throw new Worker.WrongArgsException("Wrong Task: " + whatToDo);
                 }
                 worker.DoWork();
             }
-            catch (Worker.NoSuchTaskException e)
+            catch (Worker.WrongArgsException e)
             {
-
+                Console.WriteLine(e.Message);
             }
         }
     }
