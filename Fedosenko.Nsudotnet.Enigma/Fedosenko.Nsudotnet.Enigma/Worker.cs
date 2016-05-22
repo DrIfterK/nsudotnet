@@ -14,18 +14,13 @@ namespace Fedosenko.Nsudotnet.Enigma
         public const int KeyLength = 8;
 
         public abstract void DoWork();
-        public class NoSuchAlgorithmException : Exception
-        {
-            public NoSuchAlgorithmException() { }
-            public NoSuchAlgorithmException(string message) : base(message) { }
-        };
         public class WrongArgsException : Exception
         {
             public WrongArgsException() { }
             public WrongArgsException(string message) : base(message) { }
         };
         
-        public SymmetricAlgorithm parseAlgorithm(String algorithmName)
+        public SymmetricAlgorithm ParseAlgorithm(String algorithmName)
         {
             switch (algorithmName.ToUpper())
             {

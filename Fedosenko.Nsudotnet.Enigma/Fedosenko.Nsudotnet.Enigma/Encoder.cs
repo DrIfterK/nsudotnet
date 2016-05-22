@@ -15,7 +15,7 @@ namespace Fedosenko.Nsudotnet.Enigma
         {
             if (args.Length != ArgsLength) throw new WrongArgsException(WrongArgs + "\n" + HelpEncode);
             this._algorithmName = args[2];
-            this._symmetricAlgorithm = parseAlgorithm(_algorithmName);
+            this._symmetricAlgorithm = ParseAlgorithm(_algorithmName);
             this._fileFromName = args[1];
             this._fileToName = args[3];
         }
@@ -43,10 +43,8 @@ namespace Fedosenko.Nsudotnet.Enigma
                     {
                         using (BinaryWriter binaryWriter = new BinaryWriter(fileKeyStream))
                         {
-                            binaryWriter.Write(_symmetricAlgorithm.Key.Length);
-                            binaryWriter.Write(_symmetricAlgorithm.Key, 0, _symmetricAlgorithm.Key.Length);
-                            binaryWriter.Write(_symmetricAlgorithm.IV.Length);
-                            binaryWriter.Write(_symmetricAlgorithm.IV, 0, _symmetricAlgorithm.IV.Length);
+                            binaryWriter.Write(Convert.ToBase64String(_symmetricAlgorithm.Key));
+                            binaryWriter.Write(Convert.ToBase64String(_symmetricAlgorithm.IV));
                         }
                     }
 
