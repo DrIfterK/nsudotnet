@@ -12,7 +12,7 @@ namespace TicTacToe
         public ConsoleView (BigFieldController controller)
 		{
             this._controller = controller;
-			controller.SetView (this);
+            controller.onUpdate += this.Update;
 			_thread = new Thread (this.Read);
 			_thread.Start ();
             Console.WriteLine("Game started. First is X!");
@@ -36,8 +36,8 @@ namespace TicTacToe
                     }
                     else if (lastField != -1 && commands.Length == 3)
                     {
-                        bigFieldX = lastField % 3;
-                        bigFieldY = lastField / 3;
+                        bigFieldX = lastField % BigField.Width;
+                        bigFieldY = lastField / BigField.Width;
                         smallFieldX = Int32.Parse(commands[1]);
                         smallFieldY = Int32.Parse(commands[2]);
                     }
@@ -46,7 +46,7 @@ namespace TicTacToe
                         if (lastField == -1)
                             Console.WriteLine("Wrong args. Type \"set bigFieldX bigFieldY smallFieldX smallFieldY\".");
                         else
-                            Console.WriteLine("Wrong args. Type only \"set smallFieldX smallFieldY\" cause you locked on field " + lastField % 3 + " " + lastField / 3 + ".");
+                            Console.WriteLine("Wrong args. Type only \"set smallFieldX smallFieldY\" cause you locked on field " + lastField % BigField.Width + " " + lastField / BigField.Width + ".");
                         continue;
                     }
                     try
@@ -99,7 +99,7 @@ namespace TicTacToe
 							CharField charField = smallField.GetField (jj, ii);
 							lines [i * BigField.Height + ii].Append (charField.GetSymbol());
 						}
-                        if(i == last/BigField.Height && j == last%BigField.Width && last != -1)
+                        if(i == last/BigField.Width && j == last%BigField.Width && last != -1)
                             lines[i * BigField.Height + ii].Append('|');
                         else if(smallField.GetSymbol() != Field.Nol)
                             lines[i * BigField.Height + ii].Append('#');

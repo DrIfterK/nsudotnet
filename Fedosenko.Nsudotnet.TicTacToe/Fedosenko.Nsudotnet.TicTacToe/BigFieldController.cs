@@ -6,9 +6,12 @@ namespace TicTacToe
     {
         private int _count = 0;
         private int _lastFieldX = -1, _lastFieldY = -1;
-        private View _view;
         private char[] _symbols;
         protected BigField field;
+
+        public delegate void UpdateMethod(BigField field);
+        public event UpdateMethod onUpdate;
+
         private char GetWinSymbol(char[,] currentField)
         {
             int width = BigField.Width, height = BigField.Height;
@@ -49,17 +52,12 @@ namespace TicTacToe
             _lastFieldY = -1;
             _lastFieldX = -1;
             field = new BigField();
-            _view.Update(field);
-        }
-        public void SetView(View view)
-        {
-            this._view = view;
-            view.Update(field);
+            onUpdate(field);
         }
         public virtual int GetLastField()
         {
             if (_lastFieldY == -1 || _lastFieldX == -1) return -1;
-            else return _lastFieldX * 3 + _lastFieldY;
+            else return _lastFieldX * BigField.Width + _lastFieldY;
         }
         public virtual char GetSymbol()
         {
@@ -82,7 +80,7 @@ namespace TicTacToe
                     _lastFieldX = -1;
                 }
                 _count++;
-                _view.Update(field);
+                onUpdate(field);
             }
             else
             {
