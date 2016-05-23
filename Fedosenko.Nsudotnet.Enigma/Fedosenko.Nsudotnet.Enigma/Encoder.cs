@@ -41,10 +41,10 @@ namespace Fedosenko.Nsudotnet.Enigma
                     if (dotIndex == -1) dotIndex = _fileFromName.Length;
                     using (fileKeyStream = new FileStream(_fileFromName.Insert(dotIndex, ".key"), FileMode.OpenOrCreate, FileAccess.Write))
                     {
-                        using (BinaryWriter binaryWriter = new BinaryWriter(fileKeyStream))
+                        using (StreamWriter streamWriter = new StreamWriter(fileKeyStream))
                         {
-                            binaryWriter.Write(Convert.ToBase64String(_symmetricAlgorithm.Key));
-                            binaryWriter.Write(Convert.ToBase64String(_symmetricAlgorithm.IV));
+                            streamWriter.WriteLine(Convert.ToBase64String(_symmetricAlgorithm.Key));
+                            streamWriter.WriteLine(Convert.ToBase64String(_symmetricAlgorithm.IV));
                         }
                     }
 
