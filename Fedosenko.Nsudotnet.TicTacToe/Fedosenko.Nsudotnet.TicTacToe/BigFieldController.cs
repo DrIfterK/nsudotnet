@@ -5,16 +5,10 @@ namespace TicTacToe
     public class BigFieldController
     {
         private int _count = 0;
-        private int _lastFieldX = -1, _lastFieldY = -1;
         private char[] _symbols;
-        protected BigField field;
+        protected BigField _field;
+        private View _view;
 
-        public delegate void UpdateMethod(BigField field);
-        public event UpdateMethod Update;
-        public void OnUpdate()
-        {
-            Update(field);
-        }
         private char GetWinSymbol(char[,] currentField)
         {
             int width = BigField.Width, height = BigField.Height;
@@ -43,47 +37,40 @@ namespace TicTacToe
             }
             else return Field.Nol;
         }
-        public BigFieldController(BigField field)
+        public BigFieldController(View view, BigField field)
         {
+            this._view = view;
+            this._view.SetSymbol += this.SetSymbol;
+            this._view.NewGame += this.NewGame;
             _symbols = new char[2] { Field.Tic, Field.Tac };
-            this.field = field;
+            this._field = field;
         }
 
         public void NewGame()
         {
             _count = 0;
-            _lastFieldY = -1;
-            _lastFieldX = -1;
-            field = new BigField();
-            OnUpdate();
+            _field = new BigField();
+            _view.Update(_field);
         }
-        public virtual int GetLastField()
-        {
-            if (_lastFieldY == -1 || _lastFieldX == -1) return -1;
-            else return _lastFieldX * BigField.Width + _lastFieldY;
-        }
+        
         public virtual char GetSymbol()
         {
-            return field.GetSymbol();
+            return _field.GetSymbol();
         }
         public virtual void SetSymbol(int bigFieldX, int bigFieldY, int smallFieldX, int smallFieldY)
         {
-            if ((bigFieldX == _lastFieldY && bigFieldY == _lastFieldX) || (_lastFieldY == -1 && _lastFieldX == -1))
+            int lastField = _field.GetLastField();
+            int lastFieldX = lastField % BigField.Width;
+            int lastFieldY = lastField / BigField.Height;
+            if ((bigFieldX == lastFieldX && bigFieldY == lastFieldY) || (lastField == -1))
             {
                 
-                SmallField current = field.GetField(bigFieldX, bigFieldY);
-                current.SetSymbol(smallFieldX, smallFieldY, _symbols[_count % _symbols.Length]);
+                SmallField current = _field.GetField(bigFieldX, bigFieldY);
+                _field.SetSymbol(bigFieldX, bigFieldY, smallFieldX, smallFieldY, _symbols[_count % _symbols.Length]);
                 IsSmallGameOver(current);
                 IsGameOver();
-                _lastFieldY = smallFieldX;
-                _lastFieldX = smallFieldY;
-                if (field.GetField(_lastFieldY, _lastFieldX).GetSymbol() != Field.Nol)
-                {
-                    _lastFieldY = -1;
-                    _lastFieldX = -1;
-                }
                 _count++;
-                OnUpdate();
+                _view.Update(_field);
             }
             else
             {
@@ -117,13 +104,13 @@ namespace TicTacToe
             {
                 for (int j = 0; j < width; j++)
                 {
-                    currentField[i, j] = field.GetSymbol(j, i);
+                    currentField[i, j] = _field.GetSymbol(j, i);
                     if (currentField[i, j] == Field.Nol) hasNol = true;
                 }
             }
             char symbol = GetWinSymbol(currentField);
-            field.SetSymbol(symbol);
-            if (symbol == Field.Nol && hasNol == false) field.SetSymbol(Field.Nor);
+            _field.SetSymbol(symbol);
+            if (symbol == Field.Nol && hasNol == false) _field.SetSymbol(Field.Nor);
             return symbol;
         }
     }

@@ -6,8 +6,8 @@ namespace TicTacToe
 	{
 		public const int Width = 3, Height = 3;
 		private SmallField[,] _field;
-
-		public BigField()
+        private int _lastFieldX = -1, _lastFieldY = -1;
+        public BigField()
 		{
 			symbol = Nol;
 			this._field = new SmallField[Height, Width];
@@ -17,11 +17,22 @@ namespace TicTacToe
 				}
 			}
 		}
+        public virtual int GetLastField()
+        {
+            if (_lastFieldY == -1 || _lastFieldX == -1 || symbol != Nol) return -1;
+            else return _lastFieldY * Width + _lastFieldX;
+        }
         public void SetSymbol(int x, int y, char symbol)
         {
             _field[y, x].SetSymbol(symbol);
         }
-		public SmallField GetField(int x, int y){
+        public void SetSymbol(int bx, int by, int x, int y, char symbol)
+        {
+            _lastFieldX = x;
+            _lastFieldY = y;
+            _field[by, bx].SetSymbol(x, y, symbol);
+        }
+        public SmallField GetField(int x, int y){
 			return _field [y, x];
 		}
         public char GetSymbol(int x, int y)

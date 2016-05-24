@@ -6,8 +6,9 @@ namespace TicTacToe
 	{
 		public static void Main(string[] args){
             BigField field = new BigField();
-            BigFieldController controller = new BigFieldController(field);
-            ConsoleView view = new ConsoleView(controller);
+            ConsoleView view = new ConsoleView(field);
+            BigFieldController controller = new BigFieldController(view, field);
+
             controller.NewGame();
 		}
 	}

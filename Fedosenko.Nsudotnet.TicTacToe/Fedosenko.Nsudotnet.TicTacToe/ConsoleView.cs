@@ -8,11 +8,12 @@ namespace TicTacToe
 	{
 		private Thread _thread;
         private const string CmdSet = "set", CmdExit = "exit", CmdNewGame = "new", CmdHelp = "help";
-        private BigFieldController _controller;
-        public ConsoleView (BigFieldController controller)
+        private BigField _field;
+        public override event SetSymbolMethod SetSymbol;
+        public override event NewGameMethod NewGame;
+        public ConsoleView (BigField field)
 		{
-            this._controller = controller;
-            controller.Update += this.Update;
+            this._field = field;
 			_thread = new Thread (this.Read);
 			_thread.Start ();
             Console.WriteLine("Game started. First is X!");
@@ -25,7 +26,7 @@ namespace TicTacToe
                 string[] commands = line.Split(' ');
                 if (commands[0].Equals(CmdSet))
                 {
-                    int lastField = _controller.GetLastField();
+                    int lastField = _field.GetLastField();
                     int bigFieldX = 0, bigFieldY = 0, smallFieldX = 0, smallFieldY = 0;
                     try {
                         if (lastField == -1 && commands.Length == 5)
@@ -53,9 +54,9 @@ namespace TicTacToe
                         try
                         {
 
-                            _controller.SetSymbol(bigFieldX, bigFieldY, smallFieldX, smallFieldY);
+                            SetSymbol(bigFieldX, bigFieldY, smallFieldX, smallFieldY);
                             char winnerSymbol;
-                            if ((winnerSymbol = _controller.GetSymbol()) != Field.Nol)
+                            if ((winnerSymbol = _field.GetSymbol()) != Field.Nol)
                             {
                                 Console.WriteLine("Game is over! Winner is " + winnerSymbol + "!");
                                 Console.WriteLine("If you want to start a new game type \"new\".");
@@ -77,7 +78,7 @@ namespace TicTacToe
                     
                 }
                 else if (commands[0].Equals(CmdHelp)) Help();
-                else if (commands[0].Equals(CmdNewGame)) _controller.NewGame();
+                else if (commands[0].Equals(CmdNewGame)) NewGame();
                 else if (commands[0].Equals(CmdExit)) break;
                 else Console.WriteLine("Wrong Command!");
             }
@@ -90,13 +91,14 @@ namespace TicTacToe
             Console.WriteLine("    exit - close the game;");
             Console.WriteLine("    new - start new game.");
         }
-        public void Update(BigField field){
+        public override void Update(BigField field){
+            this._field = field;
 			StringBuilder[] lines = new StringBuilder[BigField.Height * SmallField.Height + 3];
             for(int i = 0; i < lines.Length; i++)
             {
                 lines[i] = new StringBuilder();
             }
-            int last = _controller.GetLastField();
+            int last = field.GetLastField();
 			for (int i = 0; i < BigField.Height; i++) {
 				for (int j = 0; j < BigField.Width; j++) {
 					SmallField smallField = field.GetField (j, i);

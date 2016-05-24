@@ -2,9 +2,13 @@
 
 namespace TicTacToe
 {
-	public interface View
+	public abstract class View
 	{
-		void Update (BigField field);
+        public delegate void SetSymbolMethod(int bigFieldX, int bigFieldY, int smallFieldX, int smallFieldY);
+        public abstract event SetSymbolMethod SetSymbol;
+        public delegate void NewGameMethod();
+        public abstract event NewGameMethod NewGame;
+        public abstract void Update(BigField field);
 	}
 }
 
