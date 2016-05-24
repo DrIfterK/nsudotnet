@@ -6,7 +6,7 @@ namespace TicTacToe
 	{
 		public const int Width = 3, Height = 3;
 		private CharField[,] _field;
-
+        private bool _full = false;
 		public SmallField ()
 		{
 			symbol = Nol;
@@ -17,9 +17,16 @@ namespace TicTacToe
 				}
 			}
 		}
-
-		public void SetSymbol(int x, int y, char symbol){
-            if (this.symbol == Nol)
+        public void SetFull()
+        {
+            _full = true;
+        }
+        public bool IsFull()
+        {
+            return _full;
+        }
+        public void SetSymbol(int x, int y, char symbol){
+            if (!_full)
                 _field[y, x].SetSymbol(symbol);
             else throw new ChangingNotNolSymbolException();
 		}

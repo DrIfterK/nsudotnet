@@ -8,7 +8,7 @@ namespace TicTacToe
         private char[] _symbols;
         protected BigField _field;
         private View _view;
-
+        
         private char GetWinSymbol(char[,] currentField)
         {
             int width = BigField.Width, height = BigField.Height;
@@ -91,8 +91,14 @@ namespace TicTacToe
                 }
             }
             char symbol = GetWinSymbol(currentField);
-            field.SetSymbol(symbol);
-            if (symbol == Field.Nol && hasNol == false) field.SetSymbol(Field.Nor);
+            if (hasNol == false)
+            {
+                if (symbol == Field.Nol) field.SetSymbol(Field.Nor);
+                field.SetFull();
+                return symbol;
+            }
+            if(field.GetSymbol() == Field.Nol)
+                field.SetSymbol(symbol);
             return symbol;
         }
         public char IsGameOver()

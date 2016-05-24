@@ -27,10 +27,10 @@ namespace TicTacToe
             _field[y, x].SetSymbol(symbol);
         }
         public void SetSymbol(int bx, int by, int x, int y, char symbol)
-        {
+        {   
+            _field[by, bx].SetSymbol(x, y, symbol);
             _lastFieldX = x;
             _lastFieldY = y;
-            _field[by, bx].SetSymbol(x, y, symbol);
         }
         public SmallField GetField(int x, int y){
 			return _field [y, x];
