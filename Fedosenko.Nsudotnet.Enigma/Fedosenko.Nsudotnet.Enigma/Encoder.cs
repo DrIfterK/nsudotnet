@@ -37,9 +37,9 @@ namespace Fedosenko.Nsudotnet.Enigma
                             fileFromStream.CopyTo(cryptoStream);
                         }
                     }
-                    int dotIndex = _fileFromName.LastIndexOf('.');
-                    if (dotIndex == -1) dotIndex = _fileFromName.Length;
-                    using (fileKeyStream = new FileStream(_fileFromName.Insert(dotIndex, ".key"), FileMode.OpenOrCreate, FileAccess.Write))
+                    
+                    FileInfo currentFile = new FileInfo(_fileFromName);
+                    using (fileKeyStream = new FileStream(Path.GetFileNameWithoutExtension(currentFile.FullName) + ".key" + currentFile.Extension, FileMode.OpenOrCreate, FileAccess.Write))
                     {
                         using (StreamWriter streamWriter = new StreamWriter(fileKeyStream))
                         {
