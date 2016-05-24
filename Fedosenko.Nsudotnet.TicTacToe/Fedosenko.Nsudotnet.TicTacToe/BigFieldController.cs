@@ -10,8 +10,11 @@ namespace TicTacToe
         protected BigField field;
 
         public delegate void UpdateMethod(BigField field);
-        public event UpdateMethod onUpdate;
-
+        public event UpdateMethod Update;
+        public void OnUpdate()
+        {
+            Update(field);
+        }
         private char GetWinSymbol(char[,] currentField)
         {
             int width = BigField.Width, height = BigField.Height;
@@ -52,7 +55,7 @@ namespace TicTacToe
             _lastFieldY = -1;
             _lastFieldX = -1;
             field = new BigField();
-            onUpdate(field);
+            OnUpdate();
         }
         public virtual int GetLastField()
         {
@@ -80,7 +83,7 @@ namespace TicTacToe
                     _lastFieldX = -1;
                 }
                 _count++;
-                onUpdate(field);
+                OnUpdate();
             }
             else
             {

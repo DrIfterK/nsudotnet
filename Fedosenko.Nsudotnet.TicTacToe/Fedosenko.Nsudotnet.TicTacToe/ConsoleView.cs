@@ -12,7 +12,7 @@ namespace TicTacToe
         public ConsoleView (BigFieldController controller)
 		{
             this._controller = controller;
-            controller.onUpdate += this.Update;
+            controller.Update += this.Update;
 			_thread = new Thread (this.Read);
 			_thread.Start ();
             Console.WriteLine("Game started. First is X!");
@@ -27,46 +27,52 @@ namespace TicTacToe
                 {
                     int lastField = _controller.GetLastField();
                     int bigFieldX = 0, bigFieldY = 0, smallFieldX = 0, smallFieldY = 0;
-                    if (lastField == -1 && commands.Length == 5)
-                    {
-                        bigFieldX = Int32.Parse(commands[1]);
-                        bigFieldY = Int32.Parse(commands[2]);
-                        smallFieldX = Int32.Parse(commands[3]);
-                        smallFieldY = Int32.Parse(commands[4]);
-                    }
-                    else if (lastField != -1 && commands.Length == 3)
-                    {
-                        bigFieldX = lastField % BigField.Width;
-                        bigFieldY = lastField / BigField.Width;
-                        smallFieldX = Int32.Parse(commands[1]);
-                        smallFieldY = Int32.Parse(commands[2]);
-                    }
-                    else
-                    {
-                        if (lastField == -1)
-                            Console.WriteLine("Wrong args. Type \"set bigFieldX bigFieldY smallFieldX smallFieldY\".");
-                        else
-                            Console.WriteLine("Wrong args. Type only \"set smallFieldX smallFieldY\" cause you locked on field " + lastField % BigField.Width + " " + lastField / BigField.Width + ".");
-                        continue;
-                    }
-                    try
-                    {
-
-                        _controller.SetSymbol(bigFieldX, bigFieldY, smallFieldX, smallFieldY);
-                        char winnerSymbol;
-                        if ((winnerSymbol = _controller.GetSymbol()) != Field.Nol)
+                    try {
+                        if (lastField == -1 && commands.Length == 5)
                         {
-                            Console.WriteLine("Game is over! Winner is " + winnerSymbol + "!");
-                            Console.WriteLine("If you want to start a new game type \"new\".");
+                            bigFieldX = Int32.Parse(commands[1]);
+                            bigFieldY = Int32.Parse(commands[2]);
+                            smallFieldX = Int32.Parse(commands[3]);
+                            smallFieldY = Int32.Parse(commands[4]);
+                        }
+                        else if (lastField != -1 && commands.Length == 3)
+                        {
+                            bigFieldX = lastField % BigField.Width;
+                            bigFieldY = lastField / BigField.Width;
+                            smallFieldX = Int32.Parse(commands[1]);
+                            smallFieldY = Int32.Parse(commands[2]);
+                        }
+                        else
+                        {
+                            if (lastField == -1)
+                                Console.WriteLine("Wrong args. Type \"set bigFieldX bigFieldY smallFieldX smallFieldY\".");
+                            else
+                                Console.WriteLine("Wrong args. Type only \"set smallFieldX smallFieldY\" cause you locked on field " + lastField % BigField.Width + " " + lastField / BigField.Width + ".");
+                            continue;
+                        }
+                        try
+                        {
+
+                            _controller.SetSymbol(bigFieldX, bigFieldY, smallFieldX, smallFieldY);
+                            char winnerSymbol;
+                            if ((winnerSymbol = _controller.GetSymbol()) != Field.Nol)
+                            {
+                                Console.WriteLine("Game is over! Winner is " + winnerSymbol + "!");
+                                Console.WriteLine("If you want to start a new game type \"new\".");
+                            }
+                        }
+                        catch (System.IndexOutOfRangeException e)
+                        {
+                            Console.WriteLine("Wrong Field selected " + bigFieldX + " " + bigFieldY + " : " + smallFieldX + " " + smallFieldY);
+                        }
+                        catch (Field.ChangingNotNolSymbolException e)
+                        {
+                            Console.WriteLine("Wrong Field selected " + bigFieldX + " " + bigFieldY + " : " + smallFieldX + " " + smallFieldY);
                         }
                     }
-                    catch (System.IndexOutOfRangeException e)
+                    catch(FormatException e)
                     {
-                        Console.WriteLine("Wrong Field selected " + bigFieldX + " " + bigFieldY + " : " + smallFieldX + " " + smallFieldY);
-                    }
-                    catch (Field.ChangingNotNolSymbolException e)
-                    {
-                        Console.WriteLine("Wrong Field selected " + bigFieldX + " " + bigFieldY + " : " + smallFieldX + " " + smallFieldY);
+                        Console.WriteLine(e.Message);
                     }
                     
                 }
